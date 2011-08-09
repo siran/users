@@ -253,15 +253,29 @@ class UsersController extends UsersAppController {
  * @return void
  */
 	public function register() {
-		if ($this->Auth->user()) {
-			$this->Session->setFlash(__d('users', 'You are already registered and logged in!', true));
-			$this->redirect('/');
+		if ($this->Session->read('Auth.redirect')) {
+			$return_to = $this->Session->read('Auth.redirect');
+		} else if ($this->referer()) {
+			$return_to = $this->referer();
+		} else if (!empty($this->RequestHandler->params['url']['return_to'])) {
+			$return_to =  $this->RequestHandler->params['url']['return_to'];
+		} else {
+			$return_to = '/';
 		}
 
+		if ($this->Auth->user()) {
+			$this->Session->setFlash(__d('users', 'You are already registered and logged in!', true));
+			$this->redirect($return_to);
+		}
+
+		$this->set(array('return_to' => $return_to));
+
 		if (!empty($this->data)) {
-			$user = $this->User->register($this->data);
+			$user = $this->{$this->modelClass}->register($this->data);
 			if ($user !== false) {
 				$this->set('user', $user);
+				$this->set('return_to', $this->data[$this->modelClass]['return_to']);
+				$this->set('modelClass', $this->modelClass);
 				$this->_sendVerificationEmail($user[$this->modelClass]['email']);
 				$this->Session->setFlash(__d('users', 'Your account has been created. You should receive an e-mail shortly to authenticate your account. Once validated you will be able to login.', true));
 				$this->redirect(array('action'=> 'login'));
@@ -301,8 +315,12 @@ class UsersController extends UsersAppController {
 			$this->redirect($this->Auth->redirect($data['return_to']));
 		}
 
-		if (isset($this->params['named']['return_to'])) {
-			$this->set('return_to', urldecode($this->params['named']['return_to']));
+		if (!empty($this->RequestHandler->params['url']['return_to'])) {
+			$this->set('return_to', $this->RequestHandler->params['url']['return_to']);
+		} else if ($this->Session->read('Auth.redirect')) {
+			$this->set('return_to', $this->Session->read('Auth.redirect'));
+		} else if ($this->referer()) {
+			$this->set('return_to', $this->referer());
 		} else {
 			$this->set('return_to', false);
 		}
@@ -407,13 +425,13 @@ class UsersController extends UsersAppController {
 					$content[] = $newPassword;
 					$this->Email->send($content);
 					$this->Session->setFlash(__d('users', 'Your password was sent to your registered email account', true));
-					$this->redirect(array('action' => 'login'));
+					$this->redirect(array('action' => 'login', '?' => array('return_to' => $this->RequestHandler->params['url']['return_to'])));
 				} else {
 					unset($data);
 					$data[$this->modelClass]['active'] = 1;
 					$this->User->save($data);
 					$this->Session->setFlash(__d('users', 'Your e-mail has been validated!', true));
-					$this->redirect(array('action' => 'login'));
+					$this->redirect(array('action' => 'login', '?' => array('return_to' => $this->RequestHandler->params['url']['return_to'])));
 				}
 			} else {
 				$this->Session->setFlash(__d('users', 'There was an error trying to validate your e-mail address. Please check your e-mail for the URL you should use to verify your e-mail address.', true));
@@ -531,7 +549,7 @@ class UsersController extends UsersAppController {
 				$this->Email->send();
 				if ($admin) {
 					$this->Session->setFlash(sprintf(
-						__d('users', '%s has been sent an email with instruction to reset their password.', true),
+						__d('users', '%s has been sent an email with instructions to reset their password.', true),
 						$user[$this->modelClass]['email']));
 					$this->redirect(array('action' => 'index', 'admin' => true));
 				} else {
