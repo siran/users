@@ -253,15 +253,8 @@ class UsersController extends UsersAppController {
  * @return void
  */
 	public function register() {
-		if ($this->Session->read('Auth.redirect')) {
-			$return_to = $this->Session->read('Auth.redirect');
-		} else if ($this->referer()) {
-			$return_to = $this->referer();
-		} else if (!empty($this->RequestHandler->params['url']['return_to'])) {
-			$return_to =  $this->RequestHandler->params['url']['return_to'];
-		} else {
-			$return_to = '/';
-		}
+
+		$return_to = $this->_setReturnTo();
 
 		if ($this->Auth->user()) {
 			$this->Session->setFlash(__d('users', 'You are already registered and logged in!', true));
@@ -315,15 +308,8 @@ class UsersController extends UsersAppController {
 			$this->redirect($this->Auth->redirect($data['return_to']));
 		}
 
-		if (!empty($this->RequestHandler->params['url']['return_to'])) {
-			$this->set('return_to', $this->RequestHandler->params['url']['return_to']);
-		} else if ($this->Session->read('Auth.redirect')) {
-			$this->set('return_to', $this->Session->read('Auth.redirect'));
-		} else if ($this->referer()) {
-			$this->set('return_to', $this->referer());
-		} else {
-			$this->set('return_to', false);
-		}
+		$return_to = $this->_setReturnTo();
+		$this->set(array('return_to' => $return_to));
 	}
 
 /**
@@ -616,5 +602,22 @@ class UsersController extends UsersAppController {
 		}
 
 		$this->set('token', $token);
+	}
+
+/**
+ * This method set the 'return to' variable for login and register actions (so the user can return to where he was after login or registration/verification).
+ *
+ * @return string url
+ */
+	protected function _setReturnTo() {
+		if (!empty($this->data[$this->modelClass]['return_to'])) {
+			$return_to = $this->data[$this->modelClass]['return_to'];
+		} else if ($this->Session->read('Auth.redirect')) {
+			$return_to = $this->Session->read('Auth.redirect');
+		} else if ($this->referer()) {
+			$return_to = $this->referer();
+		} else  {
+			$return_to = '/';
+		}
 	}
 }
