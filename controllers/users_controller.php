@@ -619,5 +619,6 @@ class UsersController extends UsersAppController {
 		} else  {
 			$return_to = '/';
 		}
+		return $return_to;
 	}
 }
