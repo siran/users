@@ -97,7 +97,7 @@ class UsersController extends UsersAppController {
 			'conditions' => array(
 				'OR' => array(
 					'AND' => array(
-							$this->modelClass . '.active' => 1, 
+							$this->modelClass . '.active' => 1,
 							$this->modelClass . '.email_authenticated' => 1))));
 
 
@@ -358,7 +358,7 @@ class UsersController extends UsersAppController {
 		$message = sprintf(__d('users', '%s you have successfully logged out', true), $this->Auth->user('username'));
 		$this->Session->destroy();
 		$this->Cookie->destroy();
-		
+
 		$this->Session->setFlash($message);
 		$this->redirect($this->Auth->logout());
 	}
@@ -614,11 +614,12 @@ class UsersController extends UsersAppController {
 			$return_to = $this->data[$this->modelClass]['return_to'];
 		} else if ($this->Session->read('Auth.redirect')) {
 			$return_to = $this->Session->read('Auth.redirect');
-		} else if ($this->referer()) {
-			$return_to = $this->referer();
+		// } else if ($this->referer()) {
+			// $return_to = $this->referer();
 		} else  {
 			$return_to = '/';
 		}
+		if (strpos($return_to, Inflector::tableize($this->name)) !== false) $return_to = '/';
 		return $return_to;
 	}
 }
