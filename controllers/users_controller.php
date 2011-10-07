@@ -159,17 +159,17 @@ class UsersController extends UsersAppController {
  *
  * @return void
  */
-	public function admin_index() {
-		$this->Prg->commonProcess();
-		$this->{$this->modelClass}->data[$this->modelClass] = $this->passedArgs;
-		$parsedConditions = $this->{$this->modelClass}->parseCriteria($this->passedArgs);
+	// public function admin_index() {
+		// $this->Prg->commonProcess();
+		// $this->{$this->modelClass}->data[$this->modelClass] = $this->passedArgs;
+		// $parsedConditions = $this->{$this->modelClass}->parseCriteria($this->passedArgs);
 
-		$this->paginate[$this->modelClass]['conditions'] = $parsedConditions;
-		$this->paginate[$this->modelClass]['order'] = array($this->modelClass . '.created' => 'desc');
+		// $this->paginate[$this->modelClass]['conditions'] = $parsedConditions;
+		// $this->paginate[$this->modelClass]['order'] = array($this->modelClass . '.created' => 'desc');
 
-		$this->{$this->modelClass}->recursive = 0;
-		$this->set('users', $this->paginate());
-	}
+		// $this->{$this->modelClass}->recursive = 0;
+		// $this->set('users', $this->paginate());
+	// }
 
 /**
  * Admin view
@@ -177,25 +177,25 @@ class UsersController extends UsersAppController {
  * @param string $id User ID
  * @return void
  */
-	public function admin_view($id = null) {
-		if (!$id) {
-			$this->Session->setFlash(__d('users', 'Invalid User.', true));
-			$this->redirect(array('action'=>'index'));
-		}
-		$this->set('user', $this->User->read(null, $id));
-	}
+	// public function admin_view($id = null) {
+		// if (!$id) {
+			// $this->Session->setFlash(__d('users', 'Invalid User.', true));
+			// $this->redirect(array('action'=>'index'));
+		// }
+		// $this->set('user', $this->User->read(null, $id));
+	// }
 
 /**
  * Admin add
  *
  * @return void
  */
-	public function admin_add() {
-		if ($this->User->add($this->data)) {
-			$this->Session->setFlash(__d('users', 'The User has been saved', true));
-			$this->redirect(array('action' => 'index'));
-		}
-	}
+	// public function admin_add() {
+		// if ($this->User->add($this->data)) {
+			// $this->Session->setFlash(__d('users', 'The User has been saved', true));
+			// $this->redirect(array('action' => 'index'));
+		// }
+	// }
 
 /**
  * Admin edit
@@ -203,24 +203,24 @@ class UsersController extends UsersAppController {
  * @param string $id User ID
  * @return void
  */
-	public function admin_edit($userId = null) {
-		try {
-			$result = $this->User->edit($userId, $this->data);
-			if ($result === true) {
-				$this->Session->setFlash(__d('users', 'User saved', true));
-				$this->redirect(array('action' => 'index'));
-			} else {
-				$this->data = $result;
-			}
-		} catch (OutOfBoundsException $e) {
-			$this->Session->setFlash($e->getMessage());
-			$this->redirect(array('action' => 'index'));
-		}
+	// public function admin_edit($userId = null) {
+		// try {
+			// $result = $this->User->edit($userId, $this->data);
+			// if ($result === true) {
+				// $this->Session->setFlash(__d('users', 'User saved', true));
+				// $this->redirect(array('action' => 'index'));
+			// } else {
+				// $this->data = $result;
+			// }
+		// } catch (OutOfBoundsException $e) {
+			// $this->Session->setFlash($e->getMessage());
+			// $this->redirect(array('action' => 'index'));
+		// }
 
-		if (empty($this->data)) {
-			$this->data = $this->User->read(null, $userId);
-		}
-	}
+		// if (empty($this->data)) {
+			// $this->data = $this->User->read(null, $userId);
+		// }
+	// }
 
 /**
  * Delete a user account
@@ -228,15 +228,15 @@ class UsersController extends UsersAppController {
  * @param string $userId User ID
  * @return void
  */
-	public function admin_delete($userId = null) {
-		if ($this->User->delete($userId)) {
-			$this->Session->setFlash(__d('users', 'User deleted', true));
-		} else {
-			$this->Session->setFlash(__d('users', 'Invalid User', true));
-		}
+	// public function admin_delete($userId = null) {
+		// if ($this->User->delete($userId)) {
+			// $this->Session->setFlash(__d('users', 'User deleted', true));
+		// } else {
+			// $this->Session->setFlash(__d('users', 'Invalid User', true));
+		// }
 
-		$this->redirect(array('action' => 'index'));
-	}
+		// $this->redirect(array('action' => 'index'));
+	// }
 
 /**
  * Search for a user
