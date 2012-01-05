@@ -297,13 +297,13 @@ class UsersController extends UsersAppController {
 			}
 
 			$this->Session->setFlash(sprintf(__d('users', '%s you have successfully logged in', true), $this->Auth->user('username')));
-			if (!empty($this->data)) {
+			if (!empty($this->data[$this->modelClass])) {
 				$data = $this->data[$this->modelClass];
 				$this->_setCookie();
 			}
 
 			if (empty($data['return_to'])) {
-				$data['return_to'] = null;
+				$data['return_to'] = '/';
 			}
 			$this->redirect($this->Auth->redirect($data['return_to']));
 		}
@@ -518,7 +518,8 @@ class UsersController extends UsersAppController {
 		$defaults = array(
 			'from' => 'noreply@' . env('HTTP_HOST'),
 			'subject' => __d('users', 'Password Reset', true),
-			'template' => 'password_reset_request');
+			'template' => 'password_reset_request',
+			'redirectAfterEmail' => array('action' => 'login'));
 
 		$options = array_merge($defaults, $options);
 
@@ -540,7 +541,7 @@ class UsersController extends UsersAppController {
 					$this->redirect(array('action' => 'index', 'admin' => true));
 				} else {
 					$this->Session->setFlash(__d('users', 'You should receive an email with further instructions shortly', true));
-					$this->redirect(array('action' => 'login'));
+					$this->redirect($options['redirectAfterEmail']);
 				}
 			} else {
 				$this->Session->setFlash(__d('users', 'No user was found with that email.', true));
