@@ -301,10 +301,10 @@ class UsersController extends UsersAppController {
 				$data = $this->data[$this->modelClass];
 				$this->_setCookie();
 			}
-			if (empty($data[$this->modelClass]['return_to'])) {
-				$data[$this->modelClass]['return_to'] = '/';
+			if (empty($data['return_to'])) {
+				$data['return_to'] = '/';
 			}
-			$this->redirect($this->Auth->redirect($data[$this->modelClass]['return_to']));
+			$this->redirect($this->Auth->redirect($data['return_to']));
 		}
 
 		$return_to = $this->_setReturnTo();
