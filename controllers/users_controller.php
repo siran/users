@@ -416,15 +416,15 @@ class UsersController extends UsersAppController {
 					unset($data);
 					$data[$this->modelClass]['active'] = 1;
 					$this->User->save($data);
-					$this->Session->setFlash(__d('users', 'Your e-mail has been validated!', true));
+					$this->Session->setFlash(__d('users', 'Your e-mail has been validated!', true), 'sucess');
 					$this->redirect(array('action' => 'login', '?' => array('return_to' => $this->RequestHandler->params['url']['return_to'])));
 				}
 			} else {
-				$this->Session->setFlash(__d('users', 'There was an error trying to validate your e-mail address. Please check your e-mail for the URL you should use to verify your e-mail address.', true));
+				$this->Session->setFlash(__d('users', 'There was an error trying to validate your e-mail address. Please check your e-mail for the URL you should use to verify your e-mail address.', true), 'error');
 				$this->redirect('/');
 			}
 		} else {
-			$this->Session->setFlash(__d('users', 'The url you accessed is not longer valid', true));
+			$this->Session->setFlash(__d('users', 'The url you accessed is not longer valid', true), 'error');
 			$this->redirect('/');
 		}
 	}
