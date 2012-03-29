@@ -257,7 +257,7 @@ class UsersController extends UsersAppController {
 		$return_to = $this->_setReturnTo();
 
 		if ($this->Auth->user()) {
-			$this->Session->setFlash(__d('users', 'You are already registered and logged in!', true));
+			$this->Session->setFlash(__d('users', 'You are already registered and logged in!', true), 'warning');
 			$this->redirect($return_to);
 		}
 
@@ -296,7 +296,7 @@ class UsersController extends UsersAppController {
 				$this->Auth->loginRedirect = '/';
 			}
 
-			$this->Session->setFlash(sprintf(__d('users', '%s you have successfully logged in', true), $this->Auth->user('username')));
+			$this->Session->setFlash(sprintf(__d('users', '%s you have successfully logged in', true), $this->Auth->user('username')), 'success');
 			if (!empty($this->data)) {
 				$data = $this->data[$this->modelClass];
 				$this->_setCookie();
