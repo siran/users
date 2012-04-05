@@ -296,7 +296,7 @@ class UsersController extends UsersAppController {
 				$this->Auth->loginRedirect = '/';
 			}
 
-			$this->Session->setFlash(sprintf(__d('users', '%s you have successfully logged in', true), $this->Auth->user('username')), 'success');
+			$this->Session->setFlash(sprintf(__d('users', '%s you have successfully logged in', true), $this->Session->read('Auth.AppUser.Profile.firstname')), 'success');
 			if (!empty($this->data)) {
 				$data = $this->data[$this->modelClass];
 				$this->_setCookie();
