@@ -296,13 +296,17 @@ class UsersController extends UsersAppController {
 				$this->Auth->loginRedirect = '/';
 			}
 
-			$this->Session->setFlash(sprintf(__d('users', '%s you have successfully logged in', true), $this->Session->read('Auth.AppUser.Profile.firstname')), 'success');
+			$autoLoggedIn = $this->Session->read('AutoLoggedIn');
+			if (empty($autoLoggedIn)) $this->Session->setFlash(sprintf(__d('users', '%s you have successfully logged in', true), $this->Session->read('Auth.AppUser.Profile.firstname')), 'success');
 			if (!empty($this->data)) {
 				$data = $this->data[$this->modelClass];
 				$this->_setCookie();
 			}
-
-			if (empty($data['return_to'])) {
+			$referer = $this->referer();
+			$return_to = $data['return_to'];
+			if (empty($data['return_to']) && (stripos($this->here, $referer) === FALSE && stripos($referer, $this->here) === FALSE)) {
+				$data['return_to'] = $this->referer();
+			} elseif ((stripos($this->here, $return_to) !== FALSE || stripos($return_to, $this->here) !== FALSE)) {
 				$data['return_to'] = null;
 			}
 			$this->redirect($this->Auth->redirect($data['return_to']));
