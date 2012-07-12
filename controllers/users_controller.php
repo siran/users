@@ -404,16 +404,16 @@ class UsersController extends UsersAppController {
 
 			if ($this->User->save($data, false)) {
 				if ($type === 'reset') {
-					$this->Email->to = $email;
-					$this->Email->from = Configure::read('App.defaultEmail');
-					$this->Email->replyTo = Configure::read('App.defaultEmail');
-					$this->Email->return = Configure::read('App.defaultEmail');
-					$this->Email->subject = env('HTTP_HOST') . ' ' . __d('users', 'Password Reset', true);
-					$this->Email->template = null;
+					$this->EmailService->to = $email;
+					$this->EmailService->from = Configure::read('App.defaultEmail');
+					$this->EmailService->replyTo = Configure::read('App.defaultEmail');
+					$this->EmailService->return = Configure::read('App.defaultEmail');
+					$this->EmailService->subject = env('HTTP_HOST') . ' ' . __d('users', 'Password Reset', true);
+					$this->EmailService->template = null;
 					$content[] = __d('users', 'Your password has been reset', true);
 					$content[] = __d('users', 'Please login using this password and change your password', true);
 					$content[] = $newPassword;
-					$this->Email->send($content);
+					$this->EmailService->send($content);
 					$this->Session->setFlash(__d('users', 'Your password was sent to your registered email account', true));
 					$this->redirect(array('action' => 'login', '?' => array('return_to' => $this->RequestHandler->params['url']['return_to'])));
 				} else {
@@ -502,12 +502,12 @@ class UsersController extends UsersAppController {
 
 		$options = array_merge($defaults, $options);
 
-		$this->Email->to = $to;
-		$this->Email->from = $options['from'];
-		$this->Email->subject = $options['subject'];
-		$this->Email->template = $options['template'];
+		$this->EmailService->to = $to;
+		$this->EmailService->from = $options['from'];
+		$this->EmailService->subject = $options['subject'];
+		$this->EmailService->template = $options['template'];
 
-		return $this->Email->send();
+		return $this->EmailService->send();
 	}
 
 /**
@@ -531,12 +531,12 @@ class UsersController extends UsersAppController {
 
 			if (!empty($user)) {
 				$this->set('token', $user[$this->modelClass]['password_token']);
-				$this->Email->to = $user[$this->modelClass]['email'];
-				$this->Email->from = $options['from'];
-				$this->Email->subject = $options['subject'];
-				$this->Email->template = $options['template'];
+				$this->EmailService->to = $user[$this->modelClass]['email'];
+				$this->EmailService->from = $options['from'];
+				$this->EmailService->subject = $options['subject'];
+				$this->EmailService->template = $options['template'];
 
-				$this->Email->send();
+				$this->EmailService->send();
 				if ($admin) {
 					$this->Session->setFlash(sprintf(
 						__d('users', '%s has been sent an email with instructions to reset their password.', true),
