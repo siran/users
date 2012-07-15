@@ -1,3 +1,6 @@
+# W A R N I N G #
+This plugin has been adjusted for a personal use case.
+
 # Users Plugin for CakePHP #
 
 The users plugin is for allowing users to register and login manage their profile. It also allows admins to manage the users.
