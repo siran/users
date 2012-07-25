@@ -304,10 +304,10 @@ class UsersController extends UsersAppController {
 			}
 			$referer = $this->referer();
 			$return_to = $data['return_to'];
-			if (empty($data['return_to']) && (stripos($this->here, $referer) === FALSE && stripos($referer, $this->here) === FALSE)) {
+			if (empty($data['return_to']) && (stripos($this->here, $referer) === FALSE && stripos($referer, $this->here) === FALSE) && stripos($this->here, '/') === FALSE) {
 				$data['return_to'] = $this->referer();
 			} elseif ((stripos($this->here, $return_to) !== FALSE || stripos($return_to, $this->here) !== FALSE)) {
-				$data['return_to'] = null;
+				$data['return_to'] = '/';
 			}
 			$this->redirect($this->Auth->redirect($data['return_to']));
 		}
