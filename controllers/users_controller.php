@@ -304,7 +304,14 @@ class UsersController extends UsersAppController {
 			}
 			$referer = $this->referer();
 			$return_to = $data['return_to'];
-			if (empty($data['return_to']) && (stripos($this->here, $referer) === FALSE && stripos($referer, $this->here) === FALSE) && stripos($this->here, '/') === FALSE) {
+			if (
+				empty($data['return_to']) &&
+				(stripos($this->here, $referer) === FALSE &&
+				stripos($referer, $this->here) === FALSE) &&
+				stripos($this->here, '/') === FALSE &&
+				stripos($return_to, 'buy') === FALSE &&
+				stripos($return_to, 'pages') === FALSE
+			) {
 				$data['return_to'] = $this->referer();
 			} elseif ((stripos($this->here, $return_to) !== FALSE || stripos($return_to, $this->here) !== FALSE)) {
 				$data['return_to'] = '/';
@@ -402,7 +409,7 @@ class UsersController extends UsersAppController {
 				$data[$this->modelClass]['active'] = 1;
 			}
 
-			if ($this->User->save($data, false)) {
+			if ($data = $this->User->save($data, false)) {
 				if ($type === 'reset') {
 					$this->EmailService->to = $email;
 					$this->EmailService->from = Configure::read('App.defaultEmail');
@@ -415,13 +422,19 @@ class UsersController extends UsersAppController {
 					$content[] = $newPassword;
 					$this->EmailService->send($content);
 					$this->Session->setFlash(__d('users', 'Your password was sent to your registered email account', true));
-					$this->redirect(array('action' => 'login', '?' => array('return_to' => $this->RequestHandler->params['url']['return_to'])));
+					$this->redirect('/');
 				} else {
 					unset($data);
-					$data[$this->modelClass]['active'] = 1;
-					$this->User->save($data);
+/*					$data[$this->modelClass]['active'] = 1;
+					$data = $this->User->save($data);*/
+					//update invitaions
+					$data = $this->loadModel('Invitation');
+					$this->Invitation->id = $this->User->field('invitation_code');
+					if ($this->Invitation->field('id')) {
+						$this->Invitation->saveField('registered_user_id', $this->User->id);
+					}
 					$this->Session->setFlash(__d('users', 'Your e-mail has been validated!', true), 'success');
-					$this->redirect(array('action' => 'login', '?' => array('return_to' => $this->RequestHandler->params['url']['return_to'])));
+					$this->redirect('/');
 				}
 			} else {
 				$this->Session->setFlash(__d('users', 'There was an error trying to validate your e-mail address. Please check your e-mail for the URL you should use to verify your e-mail address.', true), 'error');
