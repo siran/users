@@ -434,7 +434,7 @@ class UsersController extends UsersAppController {
 						$this->Invitation->saveField('registered_user_id', $this->User->id);
 					}
 					$this->Session->setFlash(__d('users', 'Your e-mail has been validated!', true), 'success');
-					$this->redirect('/');
+					$this->redirect('/pages/validated-email');
 				}
 			} else {
 				$this->Session->setFlash(__d('users', 'There was an error trying to validate your e-mail address. Please check your e-mail for the URL you should use to verify your e-mail address.', true), 'error');
@@ -442,7 +442,7 @@ class UsersController extends UsersAppController {
 			}
 		} else {
 			$this->Session->setFlash(__d('users', 'The url you accessed is not longer valid', true), 'error');
-			$this->redirect('/');
+			$this->redirect('/pages/not-valid-verification');
 		}
 	}
 
@@ -548,7 +548,7 @@ class UsersController extends UsersAppController {
 				$this->EmailService->from = $options['from'];
 				$this->EmailService->subject = $options['subject'];
 				$this->EmailService->template = $options['template'];
-
+				$this->EmailService->sendAs = 'both';
 				$this->EmailService->send();
 				if ($admin) {
 					$this->Session->setFlash(sprintf(
