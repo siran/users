@@ -310,7 +310,9 @@ class UsersController extends UsersAppController {
 				stripos($referer, $this->here) === FALSE) &&
 				stripos($this->here, '/') === FALSE &&
 				stripos($return_to, 'buy') === FALSE &&
-				stripos($return_to, 'pages') === FALSE
+				stripos($return_to, 'pages') === FALSE &&
+				stripos($return_to, 'reset_password') === FALSE &&
+				stripos($return_to, '')
 			) {
 				$data['return_to'] = $this->referer();
 			} elseif ((stripos($this->here, $return_to) !== FALSE || stripos($return_to, $this->here) !== FALSE)) {
