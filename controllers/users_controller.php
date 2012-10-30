@@ -509,7 +509,7 @@ class UsersController extends UsersAppController {
  */
 	protected function _sendVerificationEmail($to = null, $options = array()) {
 		$defaults = array(
-			'from' => __d('users', 'PhiMarket <no-reply@phimarket.com>', true),
+			'from' => __d('users', 'PhiMarket <no-reply@'.env('HTTP_HOST').'>', true),
 			'subject' => __d('users', 'Account verification', true),
 			'template' => 'account_verification');
 
@@ -533,7 +533,7 @@ class UsersController extends UsersAppController {
  */
 	protected function _sendPasswordReset($admin = null, $options = array()) {
 		$defaults = array(
-			'from' => __d('users', 'PhiMarket <no-reply@phimarket.com>', true),
+			'from' => __d('users', 'PhiMarket <no-reply@'.env('HTTP_HOST').'>', true),
 			'subject' => __d('users', 'Password Reset', true),
 			'template' => 'password_reset_request');
 
