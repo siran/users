@@ -68,7 +68,7 @@ class UsersController extends UsersAppController {
 		$this->set('model', $this->modelClass);
 
 		if (!Configure::read('App.defaultEmail')) {
-			Configure::write('App.defaultEmail', 'noreply@' . env('HTTP_HOST'));
+			Configure::write('App.defaultEmail', 'no-reply@' . env('HTTP_HOST'));
 		}
 	}
 
