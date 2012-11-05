@@ -436,7 +436,7 @@ class UsersController extends UsersAppController {
 						$this->Invitation->saveField('registered_user_id', $this->User->id);
 					}
 					$this->Session->setFlash(__d('users', 'Your e-mail has been validated!', true), 'success');
-					$this->redirect('/pages/validated-email');
+					$this->redirect('/app_users/login');
 				}
 			} else {
 				$this->Session->setFlash(__d('users', 'There was an error trying to validate your e-mail address. Please check your e-mail for the URL you should use to verify your e-mail address.', true), 'error');
