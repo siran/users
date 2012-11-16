@@ -117,9 +117,10 @@ class User extends UsersAppModel {
 			'temppassword' => array(
 				'rule' => 'confirmPassword',
 				'message' => __d('users', 'The passwords are not equal, please try again.', true)),
-			'tos' => array(
-				'rule' => array('custom','[1]'),
-				'message' => __d('users', 'You must agree to the terms of use.', true)));
+			// 'tos' => array(
+				// 'rule' => array('custom','[1]'),
+				// 'message' => __d('users', 'You must agree to the terms of use.', true))
+				);
 
 		$this->validatePasswordChange = array(
 			'new_password' => $this->validate['passwd'],
