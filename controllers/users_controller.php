@@ -68,7 +68,7 @@ class UsersController extends UsersAppController {
 		$this->set('model', $this->modelClass);
 
 		if (!Configure::read('App.defaultEmail')) {
-			Configure::write('App.defaultEmail', 'noreply@' . env('HTTP_HOST'));
+			Configure::write('App.defaultEmail', 'no-reply@' . env('HTTP_HOST'));
 		}
 	}
 
@@ -257,7 +257,7 @@ class UsersController extends UsersAppController {
 		$return_to = $this->_setReturnTo();
 
 		if ($this->Auth->user()) {
-			$this->Session->setFlash(__d('users', 'You are already registered and logged in!', true));
+			$this->Session->setFlash(__d('users', 'You are already registered and logged in!', true), 'warning');
 			$this->redirect($return_to);
 		}
 
@@ -296,12 +296,26 @@ class UsersController extends UsersAppController {
 				$this->Auth->loginRedirect = '/';
 			}
 
-			$this->Session->setFlash(sprintf(__d('users', '%s you have successfully logged in', true), $this->Auth->user('username')));
-			if (!empty($this->data[$this->modelClass])) {
+			$autoLoggedIn = $this->Session->read('AutoLoggedIn');
+			if (empty($autoLoggedIn)) $this->Session->setFlash(sprintf(__d('users', '%s you have successfully logged in', true), $this->Session->read('Auth.AppUser.Profile.firstname')), 'success');
+			if (!empty($this->data)) {
 				$data = $this->data[$this->modelClass];
 				$this->_setCookie();
 			}
-			if (empty($data['return_to'])) {
+			$referer = $this->referer();
+			$return_to = $data['return_to'];
+			if (
+				empty($data['return_to']) &&
+				(stripos($this->here, $referer) === FALSE &&
+				stripos($referer, $this->here) === FALSE) &&
+				stripos($this->here, '/') === FALSE &&
+				stripos($return_to, 'buy') === FALSE &&
+				stripos($return_to, 'pages') === FALSE &&
+				stripos($return_to, 'reset_password') === FALSE &&
+				stripos($return_to, '')
+			) {
+				$data['return_to'] = $this->referer();
+			} elseif ((stripos($this->here, $return_to) !== FALSE || stripos($return_to, $this->here) !== FALSE)) {
 				$data['return_to'] = '/';
 			}
 			$this->redirect($this->Auth->redirect($data['return_to']));
@@ -358,7 +372,7 @@ class UsersController extends UsersAppController {
 		$this->Session->destroy();
 		$this->Cookie->destroy();
 
-		$this->Session->setFlash($message);
+		//$this->Session->setFlash($message);
 		$this->redirect($this->Auth->logout());
 	}
 
@@ -397,34 +411,40 @@ class UsersController extends UsersAppController {
 				$data[$this->modelClass]['active'] = 1;
 			}
 
-			if ($this->User->save($data, false)) {
+			if ($data = $this->User->save($data, false)) {
 				if ($type === 'reset') {
-					$this->Email->to = $email;
-					$this->Email->from = Configure::read('App.defaultEmail');
-					$this->Email->replyTo = Configure::read('App.defaultEmail');
-					$this->Email->return = Configure::read('App.defaultEmail');
-					$this->Email->subject = env('HTTP_HOST') . ' ' . __d('users', 'Password Reset', true);
-					$this->Email->template = null;
+					$this->EmailService->to = $email;
+					$this->EmailService->from = Configure::read('App.defaultEmail');
+					$this->EmailService->replyTo = Configure::read('App.defaultEmail');
+					$this->EmailService->return = Configure::read('App.defaultEmail');
+					$this->EmailService->subject = env('HTTP_HOST') . ' ' . __d('users', 'Password Reset', true);
+					$this->EmailService->template = null;
 					$content[] = __d('users', 'Your password has been reset', true);
 					$content[] = __d('users', 'Please login using this password and change your password', true);
 					$content[] = $newPassword;
-					$this->Email->send($content);
+					$this->EmailService->send($content);
 					$this->Session->setFlash(__d('users', 'Your password was sent to your registered email account', true));
-					$this->redirect(array('action' => 'login', '?' => array('return_to' => $this->RequestHandler->params['url']['return_to'])));
+					$this->redirect('/');
 				} else {
 					unset($data);
-					$data[$this->modelClass]['active'] = 1;
-					$this->User->save($data);
-					$this->Session->setFlash(__d('users', 'Your e-mail has been validated!', true));
-					$this->redirect(array('action' => 'login', '?' => array('return_to' => $this->RequestHandler->params['url']['return_to'])));
+/*					$data[$this->modelClass]['active'] = 1;
+					$data = $this->User->save($data);*/
+					//update invitaions
+					$data = $this->loadModel('Invitation');
+					$this->Invitation->id = $this->User->field('invitation_code');
+					if ($this->Invitation->field('id')) {
+						$this->Invitation->saveField('registered_user_id', $this->User->id);
+					}
+					$this->Session->setFlash(__d('users', 'Your e-mail has been validated!', true), 'success');
+					$this->redirect('/pages/validated-email');
 				}
 			} else {
-				$this->Session->setFlash(__d('users', 'There was an error trying to validate your e-mail address. Please check your e-mail for the URL you should use to verify your e-mail address.', true));
+				$this->Session->setFlash(__d('users', 'There was an error trying to validate your e-mail address. Please check your e-mail for the URL you should use to verify your e-mail address.', true), 'error');
 				$this->redirect('/');
 			}
 		} else {
-			$this->Session->setFlash(__d('users', 'The url you accessed is not longer valid', true));
-			$this->redirect('/');
+			$this->Session->setFlash(__d('users', 'The url you accessed is not longer valid', true), 'error');
+			$this->redirect('/pages/not-valid-verification');
 		}
 	}
 
@@ -491,18 +511,18 @@ class UsersController extends UsersAppController {
  */
 	protected function _sendVerificationEmail($to = null, $options = array()) {
 		$defaults = array(
-			'from' => 'noreply@' . env('HTTP_HOST'),
+			'from' => __d('users', 'PhiMarket <no-reply@'.env('HTTP_HOST').'>', true),
 			'subject' => __d('users', 'Account verification', true),
 			'template' => 'account_verification');
 
 		$options = array_merge($defaults, $options);
 
-		$this->Email->to = $to;
-		$this->Email->from = $options['from'];
-		$this->Email->subject = $options['subject'];
-		$this->Email->template = $options['template'];
+		$this->EmailService->to = $to;
+		$this->EmailService->from = $options['from'];
+		$this->EmailService->subject = $options['subject'];
+		$this->EmailService->template = $options['template'];
 
-		return $this->Email->send();
+		return $this->EmailService->send();
 	}
 
 /**
@@ -515,7 +535,7 @@ class UsersController extends UsersAppController {
  */
 	protected function _sendPasswordReset($admin = null, $options = array()) {
 		$defaults = array(
-			'from' => 'noreply@' . env('HTTP_HOST'),
+			'from' => __d('users', 'PhiMarket <no-reply@'.env('HTTP_HOST').'>', true),
 			'subject' => __d('users', 'Password Reset', true),
 			'template' => 'password_reset_request',
 			'redirectAfterEmail' => array('action' => 'login'));
@@ -527,12 +547,12 @@ class UsersController extends UsersAppController {
 
 			if (!empty($user)) {
 				$this->set('token', $user[$this->modelClass]['password_token']);
-				$this->Email->to = $user[$this->modelClass]['email'];
-				$this->Email->from = $options['from'];
-				$this->Email->subject = $options['subject'];
-				$this->Email->template = $options['template'];
-
-				$this->Email->send();
+				$this->EmailService->to = $user[$this->modelClass]['email'];
+				$this->EmailService->from = $options['from'];
+				$this->EmailService->subject = $options['subject'];
+				$this->EmailService->template = $options['template'];
+				$this->EmailService->sendAs = 'both';
+				$this->EmailService->send();
 				if ($admin) {
 					$this->Session->setFlash(sprintf(
 						__d('users', '%s has been sent an email with instructions to reset their password.', true),
@@ -619,7 +639,6 @@ class UsersController extends UsersAppController {
 		} else  {
 			$return_to = '/';
 		}
-		if (strpos($return_to, Inflector::tableize($this->name)) !== false) $return_to = '/';
 		return $return_to;
 	}
 }

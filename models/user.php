@@ -171,14 +171,14 @@ class User extends UsersAppModel {
  * @param mixed $primary Primary query
  * @return array
  */
-	public function afterFind($results, $primary = false) {
-		foreach ($results as &$row) {
-			if (isset($row['Detail']) && (is_array($row))) {
-				$row['Detail'] = $this->Detail->getSection($row[$this->alias]['id'], $this->alias);
-			}
-		}
-		return $results;
-	}
+	// public function afterFind($results, $primary = false) {
+		// foreach ($results as &$row) {
+			// if (isset($row['Detail']) && (is_array($row))) {
+				// $row['Detail'] = $this->Detail->getSection($row[$this->alias]['id'], $this->alias);
+			// }
+		// }
+		// return $results;
+	// }
 
 /**
  * Custom validation method to ensure that the two entered passwords match
@@ -538,10 +538,12 @@ class User extends UsersAppModel {
 		if ($useEmailVerification == true) {
 			$postData[$this->alias]['email_token'] = $this->generateToken();
 			$postData[$this->alias]['email_token_expires'] = date('Y-m-d H:i:s', time() + 86400);
+			$postData[$this->alias]['active'] = 0;
 		} else {
+			$postData[$this->alias]['active'] = 1;
 			$postData[$this->alias]['email_authenticated'] = 1;
 		}
-		$postData[$this->alias]['active'] = 1;
+
 		return $postData;
 	}
 
