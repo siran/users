@@ -297,7 +297,9 @@ class UsersController extends UsersAppController {
 			}
 
 			$autoLoggedIn = $this->Session->read('AutoLoggedIn');
-			if (empty($autoLoggedIn)) $this->Session->setFlash(sprintf(__d('users', '%s you have successfully logged in', true), $this->Session->read('Auth.AppUser.Profile.firstname')), 'success');
+			$name = $this->Session->read('Auth.AppUser.Profile.firstname');
+			$name = (empty($name)) ? $this->Session->read('Auth.AppUser.username') : $name;
+			if (empty($autoLoggedIn)) $this->Session->setFlash(sprintf(__d('users', '%s you have successfully logged in', true), $name), 'success');
 			if (!empty($this->data)) {
 				$data = $this->data[$this->modelClass];
 				$this->_setCookie();
