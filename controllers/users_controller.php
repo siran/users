@@ -68,7 +68,7 @@ class UsersController extends UsersAppController {
 		$this->set('model', $this->modelClass);
 
 		if (!Configure::read('App.defaultEmail')) {
-			Configure::write('App.defaultEmail', 'no-reply@' . env('HTTP_HOST'));
+			Configure::write('App.defaultEmail', 'no-reply@' . HOST_DOMAIN);
 		}
 	}
 
@@ -419,7 +419,7 @@ class UsersController extends UsersAppController {
 					$this->EmailService->from = Configure::read('App.defaultEmail');
 					$this->EmailService->replyTo = Configure::read('App.defaultEmail');
 					$this->EmailService->return = Configure::read('App.defaultEmail');
-					$this->EmailService->subject = env('HTTP_HOST') . ' ' . __d('users', 'Password Reset', true);
+					$this->EmailService->subject = HOST_DOMAIN . ' ' . __d('users', 'Password Reset', true);
 					$this->EmailService->template = null;
 					$content[] = __d('users', 'Your password has been reset', true);
 					$content[] = __d('users', 'Please login using this password and change your password', true);
@@ -513,7 +513,7 @@ class UsersController extends UsersAppController {
  */
 	protected function _sendVerificationEmail($to = null, $options = array()) {
 		$defaults = array(
-			'from' => __d('users', 'PhiMarket <no-reply@'.env('HTTP_HOST').'>', true),
+			'from' => __d('users', 'PhiMarket <no-reply@'.HOST_DOMAIN.'>', true),
 			'subject' => __d('users', 'Account verification', true),
 			'template' => 'account_verification');
 
@@ -537,7 +537,7 @@ class UsersController extends UsersAppController {
  */
 	protected function _sendPasswordReset($admin = null, $options = array()) {
 		$defaults = array(
-			'from' => __d('users', 'PhiMarket <no-reply@'.env('HTTP_HOST').'>', true),
+			'from' => __d('users', 'PhiMarket <no-reply@'.HOST_DOMAIN.'>', true),
 			'subject' => __d('users', 'Password Reset', true),
 			'template' => 'password_reset_request',
 			'redirectAfterEmail' => array('action' => 'login'));
