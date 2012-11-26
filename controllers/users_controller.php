@@ -317,7 +317,7 @@ class UsersController extends UsersAppController {
 				stripos($return_to, '')
 			) {
 				$data['return_to'] = $this->referer();
-			} elseif ((stripos($this->here, $return_to) !== FALSE || stripos($return_to, $this->here) !== FALSE)) {
+			} else {
 				$data['return_to'] = '/';
 			}
 			$this->redirect($this->Auth->redirect($data['return_to']));
