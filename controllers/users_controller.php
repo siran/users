@@ -548,6 +548,7 @@ class UsersController extends UsersAppController {
 			$user = $this->User->passwordReset($this->data);
 
 			if (!empty($user)) {
+				$this->set('username',$user[$this->modelClass]['username']);
 				$this->set('token', $user[$this->modelClass]['password_token']);
 				$this->EmailService->to = $user[$this->modelClass]['email'];
 				$this->EmailService->from = $options['from'];
