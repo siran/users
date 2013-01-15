@@ -428,6 +428,7 @@ class UsersController extends UsersAppController {
 					$this->Session->setFlash(__d('users', 'Your password was sent to your registered email account', true));
 					$this->redirect('/');
 				} else {
+					$this->AppUser->mailchimp($data[$this->modelClass]['id']);
 					unset($data);
 /*					$data[$this->modelClass]['active'] = 1;
 					$data = $this->User->save($data);*/
