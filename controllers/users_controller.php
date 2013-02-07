@@ -306,21 +306,21 @@ class UsersController extends UsersAppController {
 			}
 			$referer = $this->referer();
 			$return_to = $data['return_to'];
-			if (
-				empty($data['return_to']) &&
-				(stripos($this->here, $referer) === FALSE &&
-				stripos($referer, $this->here) === FALSE) &&
-				stripos($this->here, '/') === FALSE &&
+
+			if (stripos($return_to, $this->here) === FALSE &&
+				stripos($this->here, $return_to) === FALSE &&
 				stripos($return_to, 'buy') === FALSE &&
 				stripos($return_to, 'pages') === FALSE &&
-				stripos($return_to, 'reset_password') === FALSE &&
-				stripos($return_to, '')
-			) {
-				$data['return_to'] = $this->referer();
+				stripos($return_to, 'reset_password') === FALSE) {
+
+				$return_to = $data['return_to'];
+
 			} else {
-				$data['return_to'] = '/';
+				$return_to = '/';
 			}
-			$this->redirect($this->Auth->redirect($data['return_to']));
+
+			$this->redirect($this->Auth->redirect($return_to));
+
 		}
 
 		$return_to = $this->_setReturnTo();
