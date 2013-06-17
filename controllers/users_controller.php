@@ -524,7 +524,7 @@ class UsersController extends UsersAppController {
 		$this->EmailService->from = $options['from'];
 		$this->EmailService->subject = $options['subject'];
 		$this->EmailService->template = $options['template'];
-
+		$this->EmailService->sendAs = 'both';
 		return $this->EmailService->send();
 	}
 
