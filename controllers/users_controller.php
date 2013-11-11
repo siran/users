@@ -311,6 +311,8 @@ class UsersController extends UsersAppController {
 				stripos($this->here, $return_to) === FALSE &&
 				stripos($return_to, 'buy') === FALSE &&
 				stripos($return_to, 'pages') === FALSE &&
+				stripos($return_to, 'invitation') === FALSE &&
+				stripos($return_to, 'invitacion') === FALSE &&
 				stripos($return_to, 'reset_password') === FALSE) {
 
 				$return_to = $data['return_to'];
