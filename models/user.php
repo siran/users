@@ -538,7 +538,7 @@ class User extends UsersAppModel {
 		if ($useEmailVerification == true) {
 			$postData[$this->alias]['email_token'] = $this->generateToken();
 			$postData[$this->alias]['email_token_expires'] = date('Y-m-d H:i:s', time() + 86400);
-			$postData[$this->alias]['active'] = 1; // we activate the user, although the email is not yet authenticated
+			$postData[$this->alias]['active'] = 0;
 		} else {
 			$postData[$this->alias]['active'] = 1;
 			$postData[$this->alias]['email_authenticated'] = 1;
