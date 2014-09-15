@@ -562,14 +562,14 @@ class UsersController extends UsersAppController {
 				if ($admin) {
 					$this->Session->setFlash(sprintf(
 						__d('users', '%s has been sent an email with instructions to reset their password.', true),
-						$user[$this->modelClass]['email']));
+						$user[$this->modelClass]['email']), 'success');
 					$this->redirect(array('action' => 'index', 'admin' => true));
 				} else {
-					$this->Session->setFlash(__d('users', 'You should receive an email with further instructions shortly', true));
+					$this->Session->setFlash(__d('users', 'You should receive an email with further instructions shortly', true), 'success');
 					$this->redirect($options['redirectAfterEmail']);
 				}
 			} else {
-				$this->Session->setFlash(__d('users', 'No user was found with that email.', true));
+				$this->Session->setFlash(__d('users', 'No user was found with that email.', true), 'error');
 				$this->redirect($this->referer('/'));
 			}
 		}
