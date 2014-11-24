@@ -623,7 +623,7 @@ class UsersController extends UsersAppController {
 		if (!empty($this->data)) {
 			if ($this->User->resetPassword(Set::merge($user, $this->data))) {
 				$this->Session->setFlash(__d('users', 'Password changed, you can now login with your new password.', true));
-				$this->redirect($this->Auth->loginAction);
+				$this->redirect('/');
 			}
 		}
 
